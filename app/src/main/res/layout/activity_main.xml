@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <jingyc.com.zanview.ZanViewLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <jingyc.com.zanview.ZanView
+            android:id="@+id/zan_icon_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/zan_normal"
+            android:padding="5dp">
+        </jingyc.com.zanview.ZanView>
+        <TextView
+            android:id="@+id/zan_sum_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4399"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="18sp"/>
+    </jingyc.com.zanview.ZanViewLayout>
+
+
+</android.support.constraint.ConstraintLayout>
