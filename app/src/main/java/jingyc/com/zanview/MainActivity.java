@@ -2,25 +2,27 @@ package jingyc.com.zanview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.TextView;
+
+import com.orhanobut.logger.Logger;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ZanView mZanView ;
-    private TextView mTextView;
+    ZanViewLayout mZanViewLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mZanViewLayout = findViewById(R.id.zanViewLayout);
 
-        mZanView = (ZanView) findViewById(R.id.zan_icon_iv);
-        mTextView = (TextView) findViewById(R.id.zan_sum_tv);
-
-        mZanView.setOnClickListener(new View.OnClickListener() {
+        mZanViewLayout.setZanOnClickListener(new ZanView.OnZanClickListener() {
             @Override
-            public void onClick(View v) {
-                mZanView.setImageResource(R.mipmap.zan_click);
+            public void onZanSucess() {
+
+                Logger.i("点赞+1");
+            }
+
+            @Override
+            public void onZanCancle() {
+                Logger.i("点赞-1");
             }
         });
     }

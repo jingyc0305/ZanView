@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:orientation="vertical">
 
     <jingyc.com.zanview.ZanViewLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/zanViewLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="240dp"
+        android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
-        android:gravity="center">
-        <jingyc.com.zanview.ZanView
-            android:id="@+id/zan_icon_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/zan_normal"
-            android:padding="5dp">
-        </jingyc.com.zanview.ZanView>
-        <TextView
-            android:id="@+id/zan_sum_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4399"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="18sp"/>
+        android:padding="10dp">
+
     </jingyc.com.zanview.ZanViewLayout>
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="输入点赞数量"
+        android:layout_marginTop="12dp"
+        android:inputType="textPersonName"/>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设置"/>
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
