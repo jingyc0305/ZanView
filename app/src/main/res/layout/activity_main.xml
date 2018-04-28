@@ -10,13 +10,13 @@
 
     <jingyc.com.zanview.ZanViewLayout
         android:id="@+id/zanViewLayout"
+        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_height="240dp"
         android:layout_gravity="center_horizontal"
-        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
         android:padding="10dp">
-
     </jingyc.com.zanview.ZanViewLayout>
+
     <EditText
         android:id="@+id/editText"
         android:layout_width="match_parent"

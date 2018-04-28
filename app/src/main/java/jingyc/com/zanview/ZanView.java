@@ -1,5 +1,8 @@
 package jingyc.com.zanview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,10 +12,13 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
+
+import com.orhanobut.logger.Logger;
 
 import jingyc.com.zanview.utils.UIUtil;
 
@@ -50,6 +56,9 @@ public class ZanView extends View {
     float mRadius;
     float mRadiusMax;
     float mRadiusMin;
+
+    private RectF mZanViewRectF;
+    private Paint mRectFPaint;
     public void setZanOnClickListener(OnZanClickListener mOnZanClickListener) {
         this.mOnZanClickListener = mOnZanClickListener;
     }
@@ -81,7 +90,26 @@ public class ZanView extends View {
         mCirclePaint.setStyle(Paint.Style.STROKE);
         mCirclePaint.setStrokeWidth(UIUtil.dip2px(getContext(), 2));
 
+        mZanBitmapPointX =  mZanedBitmap.getWidth();
+        mZanBitmapPointY = mZanedBitmap.getHeight();
 
+        mCirclePointX = mZanBitmapPointX + mZanedBitmap.getWidth()/2;
+        mCirclePointY = mZanBitmapPointY + mZanedBitmap.getHeight()/2;//UIUtil.dip2px(getContext(), 5)
+
+        mShiningBitmapX = mZanBitmapPointX + UIUtil.dip2px(getContext(), 4);
+        mShiningBitmapY = mZanBitmapPointY - UIUtil.dip2px(getContext(), 16);
+
+        mRadiusMax = mZanBitmapWidth/2 + UIUtil.dip2px(getContext(), 15);
+        mRadiusMin = mZanBitmapWidth/2;
+
+        Logger.d("bitmapX:"+mZanBitmapPointX + "/bitmapY:"+mZanBitmapPointY);
+
+        mZanViewRectF = new RectF();
+        mRectFPaint = new Paint();
+        mRectFPaint.setColor(Color.RED);
+        mRectFPaint.setStyle(Paint.Style.STROKE);
+        mRectFPaint.setStrokeWidth(2);
+        mRectFPaint.setAntiAlias(true);
     }
 
     public boolean getZanState() {
@@ -95,32 +123,24 @@ public class ZanView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //Logger.i("widthMeasureSpec:"+getMeasuredWidth());
-        //Logger.i("heightMeasureSpec:"+getMeasuredHeight());
-        mCirclePointX = getMeasuredWidth() / 2;
-        mCirclePointY = getMeasuredHeight() / 2;
-
-        mZanBitmapPointX = mCirclePointX - mZanBitmapWidth / 2;
-        mZanBitmapPointY = mCirclePointY - mZanBitmapHeight / 2;
-
-        mShiningBitmapX = mZanBitmapPointX + UIUtil.dip2px(getContext(), 2);
-        mShiningBitmapY = mZanBitmapPointY - UIUtil.dip2px(getContext(), 16);
-
-        mRadiusMax = mZanBitmapWidth/2+ UIUtil.dip2px(getContext(), 8);
-        mRadiusMin = UIUtil.dip2px(getContext(), 2);
-
+        Logger.d("zanview  onMeasure:  width :"+ MeasureSpec.getSize(widthMeasureSpec)+"  height:"+MeasureSpec.getSize(heightMeasureSpec));
+        setMeasuredDimension(mUnZanBitmap.getWidth()*2,mUnZanBitmap.getHeight()+UIUtil.dip2px(getContext(), 16));
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        //Logger.i("left:"+left+",top:"+top+",right:"+right+",bottom:"+bottom);
+        mZanViewRectF.left = left;
+        mZanViewRectF.top = top;
+        mZanViewRectF.right = right;
+        mZanViewRectF.bottom = bottom;
+        Logger.i("ZanView : left:"+left+",top:"+top+",right:"+right+",bottom:"+bottom);
     }
     private void setZanScalAnimator(float scale) {
         Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);
-        mUnZanBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_messages_like_selected);
-        mUnZanBitmap = Bitmap.createBitmap(mUnZanBitmap, 0, 0, mUnZanBitmap.getWidth(), mUnZanBitmap.getHeight(),
+        mZanedBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_messages_like_selected);
+        mZanedBitmap = Bitmap.createBitmap(mZanedBitmap, 0, 0, mZanedBitmap.getWidth(), mZanedBitmap.getHeight(),
                 matrix, true);
         postInvalidate();
     }
@@ -141,10 +161,20 @@ public class ZanView extends View {
         mCirclePaint.setColor((int) UIUtil.evaluate(fraction, START_COLOR, END_COLOR));
         postInvalidate();
     }
+    private void setZanNormalScalAnimator(float scale) {
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+        mUnZanBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_messages_like_unselected);
+        mUnZanBitmap = Bitmap.createBitmap(mUnZanBitmap, 0, 0, mUnZanBitmap.getWidth(), mUnZanBitmap.getHeight(),
+                matrix, true);
+        postInvalidate();
+    }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //Logger.i("("+mZanBitmapPointX+","+mZanBitmapPointY+")");
+        if(null != mZanViewRectF){
+            canvas.drawRect(new RectF(300,40,80,80),mRectFPaint);
+        }
         if(mZanState){
             if (mClipPath != null) {
                 canvas.save();
@@ -159,55 +189,51 @@ public class ZanView extends View {
         }
     }
     public void startAnimator() {
-        //拇指缩放动画
-        ObjectAnimator zanScalAnimator = ObjectAnimator.ofFloat(this,"zanScalAnimator",SCALE_MIN,SCALE_MAX);
-        zanScalAnimator.setInterpolator(new OvershootInterpolator());
-        zanScalAnimator.setDuration(300);
-        //zanScalAnimator.start();
-        //圆圈动画
-        ObjectAnimator zanCircleAnimator = ObjectAnimator.ofFloat(this,"zanCircleAnimator",mRadiusMin,mRadiusMax);
-        zanCircleAnimator.setDuration(300);
-        zanCircleAnimator.start();
-//        AnimatorSet animatorSet = new AnimatorSet();
-//        animatorSet.play(zanCircleAnimator);
-//        animatorSet.addListener(new AnimatorListenerAdapter() {
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//                super.onAnimationCancel(animation);
-//                mOnZanClickListener.onZanCancle();
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                super.onAnimationEnd(animation);
-//                mZanState = false;
-//                mOnZanClickListener.onZanSucess();
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//                super.onAnimationRepeat(animation);
-//            }
-//
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//                super.onAnimationStart(animation);
-//                mZanState = true;
-//            }
-//
-//            @Override
-//            public void onAnimationPause(Animator animation) {
-//                super.onAnimationPause(animation);
-//            }
-//
-//            @Override
-//            public void onAnimationResume(Animator animation) {
-//                super.onAnimationResume(animation);
-//            }
-//        });
-//        animatorSet.start();
-
-
+        if(mZanState){
+            //拇指缩放动画
+            ObjectAnimator zanScalAnimator = ObjectAnimator.ofFloat(this,"zanScalAnimator",SCALE_MIN,SCALE_MAX);
+            zanScalAnimator.setInterpolator(new OvershootInterpolator());
+            zanScalAnimator.setDuration(150);
+            zanScalAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    setZanNormalScalAnimator(SCALE_MAX);
+                    mZanState = false;
+                    mOnZanClickListener.onZanCancle();
+                }
+            });
+            zanScalAnimator.start();
+        }else{
+            ObjectAnimator normalScalAnimator = ObjectAnimator.ofFloat(this, "zanNormalScalAnimator", SCALE_MAX, SCALE_MIN);
+            normalScalAnimator.setDuration(150);
+            //拇指缩放动画
+            ObjectAnimator zanScalAnimator = ObjectAnimator.ofFloat(this,"zanScalAnimator",SCALE_MIN,SCALE_MAX);
+            zanScalAnimator.setInterpolator(new OvershootInterpolator());
+            zanScalAnimator.setDuration(150);
+            //zanScalAnimator.start();
+            //圆圈动画
+            ObjectAnimator zanCircleAnimator = ObjectAnimator.ofFloat(this,"zanCircleAnimator",mRadiusMin,mRadiusMax);
+            zanCircleAnimator.setDuration(100);
+            //zanCircleAnimator.start();
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.playTogether(zanScalAnimator,zanCircleAnimator);
+            //animatorSet.play(zanScalAnimator).with();
+            animatorSet.play(zanScalAnimator).after(normalScalAnimator);
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mOnZanClickListener.onZanSucess();
+                }
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    mZanState = true;
+                }
+            });
+            animatorSet.start();
+        }
     }
 
 
