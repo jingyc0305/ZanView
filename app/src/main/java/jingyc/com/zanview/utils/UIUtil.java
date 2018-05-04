@@ -1,6 +1,7 @@
 package jingyc.com.zanview.utils;
 
 import android.content.Context;
+import android.view.View;
 
 public class UIUtil {
     public static int dip2px(Context context, float dpValue) {
@@ -47,5 +48,20 @@ public class UIUtil {
         b = (float) Math.pow(b, 1.0 / 2.2) * 255.0f;
 
         return Math.round(a) << 24 | Math.round(r) << 16 | Math.round(g) << 8 | Math.round(b);
+    }
+    public static int getDefaultSize(int measureSpec, int defaultSize) {
+        int result = defaultSize;
+        int specMode = View.MeasureSpec.getMode(measureSpec);
+        int specSize = View.MeasureSpec.getSize(measureSpec);
+        switch (specMode) {
+            case View.MeasureSpec.UNSPECIFIED:
+            case View.MeasureSpec.AT_MOST:
+                break;
+            case View.MeasureSpec.EXACTLY:
+                result = specSize;
+                result = Math.max(result, defaultSize);
+                break;
+        }
+        return result;
     }
 }

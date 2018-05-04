@@ -2,10 +2,11 @@ package jingyc.com.zanview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
-import com.orhanobut.logger.Logger;
 
 public class MainActivity extends AppCompatActivity {
+
     ZanViewLayout mZanViewLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,12 +18,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onZanSucess() {
 
-                Logger.i("点赞+1");
+                Log.i("JingYuchun","点赞+1");
             }
 
             @Override
             public void onZanCancle() {
-                Logger.i("点赞-1");
+                Log.i("JingYuchun","点赞-1");
             }
         });
     }
