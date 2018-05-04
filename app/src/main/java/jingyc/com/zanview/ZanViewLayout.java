@@ -7,17 +7,18 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-import com.orhanobut.logger.Logger;
 
-public class ZanViewLayout extends ViewGroup implements View.OnClickListener {
+public class ZanViewLayout extends LinearLayout implements View.OnClickListener {
 
     private ZanView mZanView;
     private CountView mCountView;
-    private RectF mViewGroupRectF;
     private Paint mRectFPaint;
+    private RectF mRectF;
     public ZanViewLayout(Context context) {
         super(context);
     }
@@ -33,10 +34,9 @@ public class ZanViewLayout extends ViewGroup implements View.OnClickListener {
 
     private void init() {
        mZanView = new ZanView(getContext());
-       addView(mZanView);
-
+       addView(mZanView,getZanLayoutParams());
        mCountView = new CountView(getContext());
-       //addView(mCountView);
+       addView(mCountView,getZanLayoutParams());
 
        mRectFPaint = new Paint();
        mRectFPaint.setAntiAlias(true);
@@ -44,6 +44,16 @@ public class ZanViewLayout extends ViewGroup implements View.OnClickListener {
        mRectFPaint.setStyle(Paint.Style.STROKE);
        mRectFPaint.setStrokeWidth(3);
        setOnClickListener(this);
+
+       setWillNotDraw(false);
+    }
+
+    private LayoutParams getZanLayoutParams() {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = getPaddingLeft();
+        params.topMargin += getPaddingTop();
+        params.bottomMargin = getPaddingBottom();
+        return params;
     }
 
 
@@ -52,55 +62,17 @@ public class ZanViewLayout extends ViewGroup implements View.OnClickListener {
     }
 
     @Override
-    public void setPadding(int left, int top, int right, int bottom) {
-        super.setPadding(left, top, right, bottom);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        //1.调用每个子 View 的 measure() 来计算子 View 的尺寸
-        //2.计算子 View 的位置并保存子 View 的位置和尺寸
-        //3.计算自己的尺寸并用 setMeasuredDimension() 保存
-
-        int real_width_group = 0;
-        int real_height_group = 0;
-
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            measureChild(child,widthMeasureSpec,heightMeasureSpec);
-            real_width_group += child.getMeasuredWidth();
-            real_height_group = Math.max(real_height_group,child.getMeasuredHeight());
-        }
-        real_width_group += getPaddingLeft() + getPaddingRight();
-        real_height_group += getPaddingTop() + getPaddingBottom();
-        Logger.d("real_width_group = "+ real_width_group);
-        Logger.d("real_height_group = "+ real_height_group);
-        setMeasuredDimension(real_width_group,real_height_group);
-
-    }
-    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        mViewGroupRectF = new RectF(l,t,r,b);
-        Logger.d("ZanViewLayout changed:"+changed + " left:"+l +"top:"+t+"right:"+r+"bottom:"+b);
-        int childcount = getChildCount();
-        for (int i = 0; i < childcount; i++) {
-            View childview = getChildAt(i);
-            int childviewwidth = childview.getMeasuredWidth();
-            int childviewheight = childview.getMeasuredHeight();
-            childview.layout(l , t, l + childviewwidth, t+ childviewheight);
-            l += childviewwidth;
-        }
+        super.onLayout(changed, l, t, r, b);
+        Log.d("JingYuchun","l="+l+"/t="+t+"/r="+r+"/b="+b);
+        mRectF = new RectF(l,t,r,b);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Logger.d("===========layout onDraw=========");
-        if(null != mViewGroupRectF){
-            canvas.drawRect(mViewGroupRectF,mRectFPaint);
-        }else {
-            Logger.d("layout区域为空 mViewGroupRectF = null");
-        }
+        //Log.i("JingYuchun","===========layout onDraw=========");
+        canvas.drawRect(0,0,446,232,mRectFPaint);
     }
 
     @Override
